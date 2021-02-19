@@ -31,6 +31,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>Dependencies\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirror">
+      <HintPath>Dependencies\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="MirrorComponents">
+      <HintPath>Dependencies\MirrorComponents.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis">
+      <HintPath>Dependencies\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="SanAndreasUnity.Importing">
+      <HintPath>Dependencies\SanAndreasUnity.Importing.dll</HintPath>
+    </Reference>
+    <Reference Include="SanAndreasUnity.Importing.Audio">
+      <HintPath>Dependencies\SanAndreasUnity.Importing.Audio.dll</HintPath>
+    </Reference>
+    <Reference Include="SanAndreasUnity.Utilities">
+      <HintPath>Dependencies\SanAndreasUnity.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
