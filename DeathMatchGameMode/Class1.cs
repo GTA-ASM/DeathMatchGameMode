@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using SanAndreasUnity.Behaviours;
 using SanAndreasUnity.Utilities;
 using SanAndreasUnity.Net;
 using SanAndreasUnity.Chat;
+using SanAndreasUnity.GameModes;
+using SanAndreasUnity.Stats;
 
 namespace DeathMatchGameMode
 {
 
-    public class DeathmatchGamemode
+    public class DeathmatchGamemode : PluginManager.PluginBase
     {
-        static DeathmatchGamemode()
+        public DeathmatchGamemode()
         {
             // our plugin is loaded
 
@@ -59,22 +60,24 @@ namespace DeathMatchGameMode
                 // ped is damaged, check if he died
                 if (ped.Health <= 0)
                 {
-                    var deadPlayer = Player.GetOwningPlayer(ped);
+                    var deadPlayer = ped.PlayerOwner;
                     if (deadPlayer != null)
                     {
                         // increase number of deaths for dying player
-                        deadPlayer.SetExtraIntData("NumDeaths", deadPlayer.GetExtraIntData("NumDeaths") + 1);
+                        deadPlayer.ExtraData.SetInt("NumDeaths", deadPlayer.ExtraData.GetInt("NumDeaths") + 1);
 
                         // increase number of kills for killer
-                        var killerPlayer = damageInfo.attackerPlayer as Player;
+                        var killerPlayer = damageInfo.attackingPlayer as Player;
                         if (killerPlayer != null)
-                            killerPlayer.SetExtraIntData("NumKills", killerPlayer.GetExtraIntData("NumKills") + 1);
+                            killerPlayer.ExtraData.SetInt("NumKills", killerPlayer.ExtraData.GetInt("NumKills") + 1);
                     }
                 }
             };
 
             // display score in *Stats -> Players*
-
+            SyncedServerData.Data.SetStringArray(PlayerStats.ColumnNamesKey, new string[] { "Kills", "Deaths" });
+            SyncedServerData.Data.SetFloatArray(PlayerStats.ColumnWidthsKey, new float[] { 80, 80 });
+            SyncedServerData.Data.SetStringArray(PlayerStats.ColumnDataKeysKey, new string[] { "NumKills", "NumDeaths" });
 
             // reset the score after each 20 min
             // also pause the game for 10 seconds
