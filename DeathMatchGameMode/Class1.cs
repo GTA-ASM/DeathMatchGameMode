@@ -43,7 +43,7 @@ namespace DeathMatchGameMode
             };
 
             // assign spawn handler
-
+            SpawnManager.Instance.SpawnHandler = new MySpawnHandler();
 
             // don't add random weapon to ped
 
