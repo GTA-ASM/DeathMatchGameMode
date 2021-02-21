@@ -97,6 +97,13 @@ namespace DeathMatchGameMode
             SyncedServerData.Data.SetFloatArray(PlayerStats.ColumnWidthsKey, new float[] { 80, 80 });
             SyncedServerData.Data.SetStringArray(PlayerStats.ColumnDataKeysKey, new string[] { "NumKills", "NumDeaths" });
 
+            // set initial score for new players
+            Player.onStart += player =>
+            {
+                player.ExtraData.SetInt("NumKills", 0);
+                player.ExtraData.SetInt("NumDeaths", 0);
+            };
+
             // reset the score after each 20 min
             // also pause the game for 10 seconds
 
