@@ -9,12 +9,19 @@ using SanAndreasUnity.Net;
 using SanAndreasUnity.Chat;
 using SanAndreasUnity.GameModes;
 using SanAndreasUnity.Stats;
+using SanAndreasUnity.Commands;
+using SanAndreasUnity.Importing;
+using SanAndreasUnity.Importing.Items.Definitions;
+using SanAndreasUnity.Importing.Weapons;
 
 namespace DeathMatchGameMode
 {
 
     public class DeathmatchGamemode : PluginManager.PluginBase
     {
+        Dictionary<Player, WeaponData> weaponsPerPlayer = new Dictionary<Player, WeaponData>();
+
+
         public DeathmatchGamemode()
         {
             // our plugin is loaded
@@ -27,14 +34,14 @@ namespace DeathMatchGameMode
 
         }
 
-        static void Register()
+        void Register()
         {
             // register gamemode at GameModeManager
             // if our gamemode is selected when starting the server, the callback function (Setup) will be called
             GameModeManager.Instance.RegisterGameMode(new GameModeManager.GameModeInfo("Deathmatch Area 69", "", Setup));
         }
 
-        static void Setup()
+        void Setup()
         {
             // send chat message to all new players saying that this gamemode is running
             Player.onStart += player =>
@@ -45,14 +52,25 @@ namespace DeathMatchGameMode
             // assign spawn handler
             SpawnManager.Instance.SpawnHandler = new MySpawnHandler();
 
-            // don't add random weapon to ped
-
-
-            // register help command which will display all possible commands
-
-
             // register command for selecting weapon (/w name)
+            CommandManager.Singleton.RegisterCommand(new CommandManager.CommandInfo
+            {
+                command = "w",
+                allowToRunWithoutServerPermissions = true,
+                commandHandler = ProcessWeaponCommand,
+            });
 
+            // don't automatically add weapons to spawned players
+            SpawnManager.Instance.addWeaponsToSpawnedPlayers = false;
+
+            // when player's ped is spawned, give him a weapon he choosed
+            Ped.onStart += ped =>
+            {
+                if (ped.PlayerOwner != null)
+                {
+                    GiveWeaponToPlayer(ped.PlayerOwner);
+                }
+            };
 
             // when player is killed, we need to update score
             Ped.onDamaged += (ped, damageInfo, damageResult) =>
@@ -87,6 +105,68 @@ namespace DeathMatchGameMode
 
 
 
+        }
+
+        CommandManager.ProcessCommandResult ProcessWeaponCommand(CommandManager.ProcessCommandContext context)
+        {
+            var arguments = CommandManager.SplitCommandIntoArguments(context.command);
+
+            if (arguments.Length != 2)
+                return new CommandManager.ProcessCommandResult { response = "Invalid syntax. Example: /w ak47" };
+
+            string weaponName = arguments[1];
+
+            var weaponData = WeaponData.LoadedWeaponsData.LastOrDefault(wd => wd.weaponType.Equals(weaponName, StringComparison.InvariantCultureIgnoreCase));
+            if (weaponData == null)
+                return new CommandManager.ProcessCommandResult { response = "Weapon with that name does not exist" };
+
+            int[] allowedSlots = new int[]
+            {
+                WeaponSlot.Pistol,
+                WeaponSlot.Shotgun,
+                WeaponSlot.Submachine,
+                WeaponSlot.Machine,
+                WeaponSlot.Rifle,
+            };
+
+            var allowedWeaponNames = WeaponData.LoadedWeaponsData
+                .Where(wd => allowedSlots.Contains(wd.weaponslot))
+                .Select(wd => wd.weaponType)
+                .Distinct();
+
+            if (!allowedSlots.Contains(weaponData.weaponslot))
+                return new CommandManager.ProcessCommandResult { response = $"Only these weapons are allowed: {string.Join(", ", allowedWeaponNames)}" };
+
+            if (context.player == null)
+                return new CommandManager.ProcessCommandResult { response = "This command can only be ran for a player" };
+
+            weaponsPerPlayer[context.player] = weaponData;
+
+            GiveWeaponToPlayer(context.player);
+
+            return new CommandManager.ProcessCommandResult { response = $"Changed weapon to {weaponName}" };
+        }
+
+        void GiveWeaponToPlayer(Player player)
+        {
+            var ped = player.OwnedPed;
+
+            if (ped == null)
+                return;
+
+            // first remove all existing weapons
+            ped.WeaponHolder.RemoveAllWeapons();
+
+            if (!weaponsPerPlayer.TryGetValue(player, out WeaponData weaponData))
+            {
+                // player has not choosen a weapon yet, give him a pistol
+                weaponData = WeaponData.LoadedWeaponsData.LastOrDefault(wd => wd.weaponType.Equals("pistol", StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            var weapon = ped.WeaponHolder.SetWeaponAtSlot(weaponData.modelId1, weaponData.weaponslot);
+            ped.WeaponHolder.SwitchWeapon(weaponData.weaponslot);
+            weapon.AmmoInClip = weapon.AmmoClipSize;
+            weapon.AmmoOutsideOfClip = 500;
         }
     }
 

@@ -40,6 +40,9 @@
     <Reference Include="Mirror">
       <HintPath>Dependencies\Mirror.dll</HintPath>
     </Reference>
+    <Reference Include="SanAndreasUnity.Importing">
+      <HintPath>Dependencies\SanAndreasUnity.Importing.dll</HintPath>
+    </Reference>
     <Reference Include="SanAndreasUnity.Utilities">
       <HintPath>Dependencies\SanAndreasUnity.Utilities.dll</HintPath>
     </Reference>
