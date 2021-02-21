@@ -46,7 +46,7 @@ namespace DeathMatchGameMode
             // send chat message to all new players saying that this gamemode is running
             Player.onStart += player =>
             {
-                ChatManager.SendChatMessageToPlayer(player, "Welcome to the server ! This server is running deathmatch gamemode. Type '/help' for a list of commands.");
+                ChatManager.SendChatMessageToPlayer(player, "Welcome to the server ! This server is running deathmatch gamemode. Type '/w' to select a weapon.");
             };
 
             // assign spawn handler
