@@ -104,9 +104,6 @@ namespace DeathMatchGameMode
                 player.ExtraData.SetInt("NumDeaths", 0);
             };
 
-            // pause the game after each 10 minutes for 30 seconds
-            GameManager.Instance.gameObject.GetOrAddComponent<PauseScript>();
-
             // forbid all player requests
 
 
@@ -173,28 +170,6 @@ namespace DeathMatchGameMode
             ped.WeaponHolder.SwitchWeapon(weaponData.weaponslot);
             weapon.AmmoInClip = weapon.AmmoClipSize;
             weapon.AmmoOutsideOfClip = 500;
-        }
-
-        public class PauseScript : MonoBehaviour
-        {
-            void Start()
-            {
-                Invoke(nameof(PauseSpawning), 10 * 60);
-            }
-
-            void PauseSpawning()
-            {
-                SpawnManager.Instance.IsSpawningPaused = true;
-                Invoke(nameof(ContinueSpawning), 30);
-                ChatManager.SendChatMessageToAllPlayersAsServer("Spawning paused, resuming in 30 seconds...");
-            }
-
-            void ContinueSpawning()
-            {
-                SpawnManager.Instance.IsSpawningPaused = false;
-                Invoke(nameof(PauseSpawning), 10 * 60);
-                ChatManager.SendChatMessageToAllPlayersAsServer("Spawning resumed");
-            }
         }
     }
 
