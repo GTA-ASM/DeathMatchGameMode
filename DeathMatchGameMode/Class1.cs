@@ -52,12 +52,17 @@ namespace DeathMatchGameMode
             // assign spawn handler
             SpawnManager.Instance.SpawnHandler = new MySpawnHandler();
 
+            // remove all existing commands from BaseCommands class
+            BaseCommands.Singleton.RegisteredCommands.ForEach(command => CommandManager.Singleton.RemoveCommand(command));
+
             // register command for selecting weapon (/w name)
             CommandManager.Singleton.RegisterCommand(new CommandManager.CommandInfo
             {
                 command = "w",
-                allowToRunWithoutServerPermissions = true,
+                description = "choose a weapon",
                 commandHandler = ProcessWeaponCommand,
+                runOnlyOnServer = true,
+                allowToRunWithoutServerPermissions = true,
             });
 
             // don't automatically add weapons to spawned players
@@ -103,10 +108,6 @@ namespace DeathMatchGameMode
                 player.ExtraData.SetInt("NumKills", 0);
                 player.ExtraData.SetInt("NumDeaths", 0);
             };
-
-            // forbid all player requests
-
-
 
         }
 
