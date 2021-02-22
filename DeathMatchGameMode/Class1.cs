@@ -116,13 +116,13 @@ namespace DeathMatchGameMode
             var arguments = CommandManager.SplitCommandIntoArguments(context.command);
 
             if (arguments.Length != 2)
-                return new CommandManager.ProcessCommandResult { response = "Invalid syntax. Example: /w ak47" };
+                return CommandManager.ProcessCommandResult.Error("Invalid syntax. Example: /w ak47");
 
             string weaponName = arguments[1];
 
             var weaponData = WeaponData.LoadedWeaponsData.LastOrDefault(wd => wd.weaponType.Equals(weaponName, StringComparison.InvariantCultureIgnoreCase));
             if (weaponData == null)
-                return new CommandManager.ProcessCommandResult { response = "Weapon with that name does not exist" };
+                return CommandManager.ProcessCommandResult.Error("Weapon with that name does not exist");
 
             int[] allowedSlots = new int[]
             {
@@ -139,10 +139,10 @@ namespace DeathMatchGameMode
                 .Distinct();
 
             if (!allowedSlots.Contains(weaponData.weaponslot))
-                return new CommandManager.ProcessCommandResult { response = $"Only these weapons are allowed: {string.Join(", ", allowedWeaponNames)}" };
+                return CommandManager.ProcessCommandResult.Error($"Only these weapons are allowed: {string.Join(", ", allowedWeaponNames)}");
 
             if (context.player == null)
-                return new CommandManager.ProcessCommandResult { response = "This command can only be ran for a player" };
+                return CommandManager.ProcessCommandResult.Error("This command can only be ran for a player");
 
             weaponsPerPlayer[context.player] = weaponData;
 
