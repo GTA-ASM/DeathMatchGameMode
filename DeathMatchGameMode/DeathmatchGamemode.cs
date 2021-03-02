@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using SanAndreasUnity.Behaviours;
 using SanAndreasUnity.Utilities;
@@ -10,8 +9,6 @@ using SanAndreasUnity.Chat;
 using SanAndreasUnity.GameModes;
 using SanAndreasUnity.Stats;
 using SanAndreasUnity.Commands;
-using SanAndreasUnity.Importing;
-using SanAndreasUnity.Importing.Items.Definitions;
 using SanAndreasUnity.Importing.Weapons;
 
 namespace DeathMatchGameMode
@@ -38,21 +35,15 @@ namespace DeathMatchGameMode
             // send a message to the console to signal that everything is allright
             Debug.Log("Deathmatch gamemode loaded");
 
-            // register our gamemode
-            Register();
+            // register our gamemode at GameModeManager
+            // if our gamemode is selected when starting the server, the callback function (Activate) will be called
+            GameModeManager.Instance.RegisterGameMode(new GameModeManager.GameModeInfo("Deathmatch Area 69", "", Activate));
 
         }
 
-        void Register()
+        void Activate()
         {
-            // register gamemode at GameModeManager
-            // if our gamemode is selected when starting the server, the callback function (Setup) will be called
-            GameModeManager.Instance.RegisterGameMode(new GameModeManager.GameModeInfo("Deathmatch Area 69", "", Setup));
-        }
-
-        void Setup()
-        {
-            // send chat message to all new players saying that this gamemode is running
+            // when a new player connects, send him a message saying that this gamemode is running
             Player.onStart += player =>
             {
                 ChatManager.SendChatMessageToPlayerAsServer(
@@ -75,6 +66,7 @@ namespace DeathMatchGameMode
                 commandHandler = ProcessWeaponCommand,
                 runOnlyOnServer = true,
                 allowToRunWithoutServerPermissions = true,
+                limitInterval = 0.3f,
             });
 
             // don't automatically add weapons to spawned players
