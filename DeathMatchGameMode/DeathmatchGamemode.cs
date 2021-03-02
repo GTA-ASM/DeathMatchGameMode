@@ -21,6 +21,15 @@ namespace DeathMatchGameMode
     {
         Dictionary<Player, WeaponData> weaponsPerPlayer = new Dictionary<Player, WeaponData>();
 
+        int[] allowedWeaponSlots = new int[]
+        {
+            WeaponSlot.Pistol,
+            WeaponSlot.Shotgun,
+            WeaponSlot.Submachine,
+            WeaponSlot.Machine,
+            WeaponSlot.Rifle,
+        };
+
 
         public DeathmatchGamemode()
         {
@@ -125,24 +134,10 @@ namespace DeathMatchGameMode
 
             var weaponData = WeaponData.LoadedWeaponsData.LastOrDefault(wd => wd.weaponType.Equals(weaponName, StringComparison.InvariantCultureIgnoreCase));
             if (weaponData == null)
-                return CommandManager.ProcessCommandResult.Error("Weapon with that name does not exist");
+                return CommandManager.ProcessCommandResult.Error($"Weapon not found. Available weapons are: {GetAllowedWeaponsText()}");
 
-            int[] allowedSlots = new int[]
-            {
-                WeaponSlot.Pistol,
-                WeaponSlot.Shotgun,
-                WeaponSlot.Submachine,
-                WeaponSlot.Machine,
-                WeaponSlot.Rifle,
-            };
-
-            var allowedWeaponNames = WeaponData.LoadedWeaponsData
-                .Where(wd => allowedSlots.Contains(wd.weaponslot))
-                .Select(wd => wd.weaponType)
-                .Distinct();
-
-            if (!allowedSlots.Contains(weaponData.weaponslot))
-                return CommandManager.ProcessCommandResult.Error($"Only these weapons are allowed: {string.Join(", ", allowedWeaponNames)}");
+            if (!allowedWeaponSlots.Contains(weaponData.weaponslot))
+                return CommandManager.ProcessCommandResult.Error($"Only these weapons are allowed: {GetAllowedWeaponsText()}");
 
             if (context.player == null)
                 return CommandManager.ProcessCommandResult.Error("This command can only be ran for a player");
@@ -152,6 +147,16 @@ namespace DeathMatchGameMode
             GiveWeaponToPlayer(context.player);
 
             return new CommandManager.ProcessCommandResult { response = $"Changed weapon to {weaponName}" };
+        }
+
+        string GetAllowedWeaponsText()
+        {
+            var allowedWeaponNames = WeaponData.LoadedWeaponsData
+                .Where(wd => allowedWeaponSlots.Contains(wd.weaponslot))
+                .Select(wd => wd.weaponType.ToLowerInvariant())
+                .Distinct();
+
+            return string.Join(", ", allowedWeaponNames);
         }
 
         void GiveWeaponToPlayer(Player player)
