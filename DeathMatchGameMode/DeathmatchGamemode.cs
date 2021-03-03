@@ -93,10 +93,15 @@ namespace DeathMatchGameMode
                         // increase number of deaths for dying player
                         deadPlayer.ExtraData.SetInt("NumDeaths", deadPlayer.ExtraData.GetInt("NumDeaths") + 1);
 
-                        // increase number of kills for killer
                         var killerPlayer = damageInfo.attackingPlayer as Player;
                         if (killerPlayer != null)
+                        {
+                            // increase number of kills for killer
                             killerPlayer.ExtraData.SetInt("NumKills", killerPlayer.ExtraData.GetInt("NumKills") + 1);
+
+                            // send chat message to notify everyone about this kill
+                            ChatManager.SendChatMessageToAllPlayersAsServer($"player {killerPlayer.netId} ☠ player {deadPlayer.netId}");
+                        }
                     }
                 }
             };
