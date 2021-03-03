@@ -120,7 +120,7 @@ namespace DeathMatchGameMode
             var arguments = CommandManager.SplitCommandIntoArguments(context.command);
 
             if (arguments.Length != 2)
-                return CommandManager.ProcessCommandResult.Error("Invalid syntax. Example: /w ak47");
+                return CommandManager.ProcessCommandResult.Error($"Invalid syntax. Example: <color=olive>/w ak47</color>. Available weapons are: {GetAllowedWeaponsText()}");
 
             string weaponName = arguments[1];
 
