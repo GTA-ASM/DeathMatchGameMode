@@ -100,7 +100,7 @@ namespace DeathMatchGameMode
                             killerPlayer.ExtraData.SetInt("NumKills", killerPlayer.ExtraData.GetInt("NumKills") + 1);
 
                             // send chat message to notify everyone about this kill
-                            ChatManager.SendChatMessageToAllPlayersAsServer($"player {killerPlayer.netId} ☠ player {deadPlayer.netId}");
+                            ChatManager.SendChatMessageToAllPlayersAsServer($"player {killerPlayer.netId} <color=brown>☠</color> player {deadPlayer.netId}");
                         }
                     }
                 }
