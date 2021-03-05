@@ -32,13 +32,12 @@ namespace DeathMatchGameMode
         {
             // our plugin is loaded
 
-            // send a message to the console to signal that everything is allright
-            Debug.Log("Deathmatch gamemode loaded");
-
             // register our gamemode at GameModeManager
             // if our gamemode is selected when starting the server, the callback function (Activate) will be called
             GameModeManager.Instance.RegisterGameMode(new GameModeManager.GameModeInfo("Deathmatch Area 69", "", Activate));
 
+            // send a message to the console to signal that everything is allright
+            Debug.Log("Deathmatch gamemode loaded");
         }
 
         void Activate()
